@@ -5,7 +5,7 @@ from src.classes import Category
 
 @pytest.fixture()
 def class_category_fixture() -> Category:
-    return Category(aname="test_category", adescription="test_description")
+    return Category(name="test_category", description="test_description")
 
 
 def test_class_init(class_category_fixture: Category) -> None:
@@ -16,8 +16,8 @@ def test_class_init(class_category_fixture: Category) -> None:
 def test_category_count() -> None:
     passed = Category.category_count == 0
     if passed:
-        cat1 = Category(aname="cat1")
-        cat2 = Category(aname="cat2")
+        cat1 = Category(name="cat1")
+        cat2 = Category(name="cat2")
         passed = Category.category_count == 2
 
     #     if passed:

@@ -1,18 +1,20 @@
 class Product:
+    
     def __init__(
         self,
-        aname: str,
-        adescription: str = "",
-        aprice: float = 0.0,
-        aquantity: int = 0,
+        name: str,
+        description: str = "",
+        price: float = 0.0,
+        quantity: int = 0,
     ):
-        self.name = aname
-        self.description = adescription
-        self.price = aprice
-        self.quantity = aquantity
+        self.name = name
+        self.description = description
+        self.price = price
+        self.quantity = quantity
 
 
 class Category:
+
     # количество категорий
     category_count: int = 0
     # количество товаров
@@ -20,17 +22,19 @@ class Category:
 
     def __init__(
         self,
-        aname: str,
-        adescription: str = "",
-        aprice: float = 0.0,
-        aquantity: int = 0,
+        name: str,
+        description: str = "",
+        price: float = 0.0,
+        quantity: int = 0,
     ):
         Category.category_count += 1
-        self.name = aname
-        self.description = adescription
+        self.name = name
+        self.description = description
         # список товаров категории
         self.products: list[Product] = []
         self.product_names: list[str] = []
+        self.price = price
+        self.quantity = quantity
 
     def __del__(self) -> None:
         Category.category_count -= 1
@@ -43,10 +47,10 @@ class Category:
         product_quantity: int = 0,
     ) -> Product:
         product = Product(
-            aname=product_name,
-            adescription=product_description,
-            aquantity=product_quantity,
-            aprice=product_price,
+            name=product_name,
+            description=product_description,
+            quantity=product_quantity,
+            price=product_price,
         )
         Category.product_count += 1
 

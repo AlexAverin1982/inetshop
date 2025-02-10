@@ -6,7 +6,7 @@ from src.classes import Product
 @pytest.fixture()
 def class_product_fixture() -> Product:
     return Product(
-        aname="test_product", adescription="test_description", aprice=10.5, aquantity=10
+        name="test_product", description="test_description", price=10.5, quantity=10
     )
 
 

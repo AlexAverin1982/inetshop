@@ -1,6 +1,6 @@
 import pytest
 
-from src.classes import Category
+from src.classes import Category, Product
 
 
 @pytest.fixture()
@@ -47,3 +47,10 @@ def test_products_count(class_category_fixture: Category) -> None:
     #         del cat2 # не работает...
     # passed = Category.category_count == 0 # не работает...
     assert passed
+
+
+def test_add_products_in_constructor() -> None:
+    prod1 = Product(name='prod1')
+    prod2 = Product(name='prod2')
+    cat = Category(name='cat', description='desc', products=[prod1, prod2])
+    assert Category.product_count == 2

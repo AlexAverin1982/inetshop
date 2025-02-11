@@ -1,3 +1,6 @@
+import copy
+
+
 class Product:
     
     def __init__(
@@ -24,8 +27,7 @@ class Category:
         self,
         name: str,
         description: str = "",
-        price: float = 0.0,
-        quantity: int = 0,
+        products: list[Product] = None
     ):
         Category.category_count += 1
         self.name = name
@@ -33,8 +35,10 @@ class Category:
         # список товаров категории
         self.products: list[Product] = []
         self.product_names: list[str] = []
-        self.price = price
-        self.quantity = quantity
+        if products:
+            self.products = products
+            self.product_names = [prod.name for prod in self.products]
+            Category.product_count += len(self.products)
 
     def __del__(self) -> None:
         Category.category_count -= 1

@@ -1,5 +1,3 @@
-import pytest
-
 import src.classes
 from src.classes import Product
 
@@ -19,22 +17,24 @@ def test_new_product(three_products: list[Product]) -> None:
         {"name": name, "quantity": new_quantity}, existing_products=three_products
     )
     assert (new_product == three_products[0]) and (
-            new_product.quantity == cur_quantity + new_quantity
+        new_product.quantity == cur_quantity + new_quantity
     )
 
 
 def test_new_product2(three_products: list[Product]) -> None:
-    cur_quantity = three_products[0].quantity
-    new_quantity = 1
-    new_product = Product.new_product('blahblah')
-    assert (new_product.name == 'noname')
+    new_product = Product.new_product("blahblah")
+    assert new_product.name == "noname"
 
 
 def test_new_product3(three_products: list[Product]) -> None:
     old_price = three_products[0].price
     name = three_products[0].name
-    new_product = Product.new_product({"name": name, "price": old_price * 1.2}, existing_products=three_products)
-    assert (new_product == three_products[0]) and (three_products[0].price == old_price * 1.2)
+    new_product = Product.new_product(
+        {"name": name, "price": old_price * 1.2}, existing_products=three_products
+    )
+    assert (new_product == three_products[0]) and (
+        three_products[0].price == old_price * 1.2
+    )
 
 
 def test_new_price(three_products: list[Product]) -> None:
@@ -43,15 +43,16 @@ def test_new_price(three_products: list[Product]) -> None:
     assert three_products[0].price == old_price * 10
 
 
-def test_new_product3(three_products: list[Product]) -> None:
+def test_new_product4(three_products: list[Product]) -> None:
     cur_quantity = three_products[0].quantity
     new_quantity = 100
     new_price = 999999.9
     new_product = Product.new_product(
-        {"name": "prod1", "quantity": new_quantity, 'price': new_price}, existing_products=three_products
+        {"name": "prod1", "quantity": new_quantity, "price": new_price},
+        existing_products=three_products,
     )
     assert (new_product == three_products[0]) and (
-            new_product.quantity == cur_quantity + new_quantity
+        new_product.quantity == cur_quantity + new_quantity
     )
 
 
@@ -72,5 +73,22 @@ def test_negative_price(three_products: list[Product]) -> None:
     old_price = three_products[0].price
     three_products[0].price = -three_products[0].price
     assert (three_products[0].price == old_price) and (
-            output[-1] == "Цена не должна быть нулевая или отрицательная"
+        output[-1] == "Цена не должна быть нулевая или отрицательная"
     )
+
+
+def test_print_product(three_products: list[Product]) -> None:
+    test_str = str(three_products[0])
+    expected_str = (
+        f"{three_products[0].name}, {three_products[0].price} руб. "
+        + f"Остаток: {three_products[0].quantity} шт."
+    )
+    assert test_str == expected_str
+
+
+def test_add(three_products: list[Product]) -> None:
+    expected = (
+        three_products[0].quantity * three_products[0].price
+        + three_products[1].quantity * three_products[1].price
+    )
+    assert (three_products[0] + three_products[1]) == expected

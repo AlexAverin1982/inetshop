@@ -1,15 +1,15 @@
-from typing_extensions import Self
 from pythonlangutil.overload import Overload, signature
+from typing_extensions import Self
 
 
 class Product:
 
     def __init__(
-            self,
-            name: str,
-            description: str = "",
-            price: float = 0.0,
-            quantity: int = 0,
+        self,
+        name: str,
+        description: str = "",
+        price: float = 0.0,
+        quantity: int = 0,
     ):
         self.name = name
         self.description = description
@@ -17,9 +17,24 @@ class Product:
         self.quantity = quantity
         self.__owner = None
 
+    def __repr__(self) -> str:
+        """ОТладочное представление продукта"""
+        return f"{self.name}, {self.__price} руб. Остаток: {self.quantity} шт."
+
+    def __str__(self) -> str:
+        """Представление продукта для пользователя"""
+        return f"{self.name}, {self.__price} руб. Остаток: {self.quantity} шт."
+
+    def __add__(self, other):
+        """Вычисление общей стоимости всех товаров"""
+        return self.__price * self.quantity + other.__price * other.quantity
+
+    # def __iter__(self):
+    #     return self
+
     @classmethod
     def new_product(
-            cls, product_data: dict, existing_products: list[Self] = None
+        cls, product_data: dict, existing_products: list[Self] = None
     ) -> Self:
         if isinstance(product_data, dict):
             name = product_data.get("name", "noname")
@@ -75,14 +90,21 @@ class Category:
     product_count: int = 0
 
     def __init__(
-            self, name: str, description: str = "", products: list[Product] = None
+        self, name: str, description: str = "", products: list[Product] = None
     ):
+        """
+        конструктор
+        :param name: имя категории
+        :param description:  описание категории
+        :param products: список уже созданных объектов продукции, включаемых в создаваемую категорию
+        """
         Category.category_count += 1
         self.name = name
         self.description = description
         # список товаров категории
         self.__products: list[Product] = []
         self.product_names: list[str] = []
+        self.__current_prod_index: int = -1  # для итерации по продуктам категории
         if products:
             self.__products = products
             self.product_names = [prod.name for prod in self.__products]
@@ -91,17 +113,49 @@ class Category:
                 prod.set_owner(self)
 
     def __del__(self) -> None:
+        """
+        деструктор
+        уменьшает общее число категорий
+        :return:
+        """
         Category.category_count -= 1
+
+    def get_products_count(self) -> int:
+        """
+        общее количество продуктов данной категории
+        return:
+        """
+        count = 0
+        for prod in self.__products:
+            count += prod.quantity
+        return count
+
+    def __repr__(self):
+        return f"{self.name}, количество продуктов: {self.get_products_count()} шт."
+
+    def __iter__(self) -> Self:
+        """Возвращает итератор"""
+        # self.__current_prod_index: int = -1       # для итерации по продуктам категории
+        return self
+
+    def __next__(self):
+        """Возвращает следующий продукт категории"""
+        if self.__current_prod_index + 1 < len(self.__products):
+            self.__current_prod_index += 1
+            return self.__products[self.__current_prod_index]
+        else:
+            self.__current_prod_index: int = -1
+            raise StopIteration
 
     @Overload
     @signature("str")
     @signature("str, str, float, int")
     def add_product(
-            self,
-            product_name: str,
-            product_description: str = "",
-            product_price: float = 0.0,
-            product_quantity: int = 0,
+        self,
+        product_name: str,
+        product_description: str = "",
+        product_price: float = 0.0,
+        product_quantity: int = 0,
     ) -> None:
         product = Product(
             name=product_name,
@@ -131,17 +185,26 @@ class Category:
 
     @property
     def products(self) -> str:
-        return "\n".join(
-            [
-                f"{prod.name}, {prod.price} руб. Остаток: {prod.quantity} шт."
-                for prod in self.__products
-            ]
-        )
+        return "\n".join([str(prod) for prod in self.__products])
 
     def get_product_by_index(self, ind: int) -> Product | None:
+        """Служебный метод для полчения продукта по индексу в списке"""
         if ind in range(len(self.__products)):
             return self.__products[ind]
         elif (ind < 0) and (abs(ind) - 1) in range(len(self.__products)):
             return self.__products[ind]
         else:
             return None
+
+
+class CategoryMeta:
+    """ Тестирование итерации по объектам агрегата """
+    def __init__(self, category: Category):
+        self.category: Category = category
+
+    def get_total_cost(self) -> int:
+        """Стоимость всех продуктов"""
+        result = 0
+        for prod in self.category:
+            result += prod.quantity * prod.price
+        return result

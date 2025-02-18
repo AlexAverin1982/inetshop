@@ -1,4 +1,4 @@
-from src.classes import Product, Category, CategoryMeta
+from src.classes import Category, CategoryMeta, Product
 
 
 def test_total_cost(three_products: list[Product]) -> None:

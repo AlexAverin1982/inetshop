@@ -1,4 +1,6 @@
-from pythonlangutil.overload import Overload, signature
+# from pythonlangutil.overload import Overload, signature
+from typing import Any
+
 from typing_extensions import Self
 
 
@@ -27,7 +29,10 @@ class Product:
 
     def __add__(self, other):
         """Вычисление общей стоимости всех товаров"""
-        return self.__price * self.quantity + other.__price * other.quantity
+        if type(self) is type(other):
+            return self.__price * self.quantity + other.__price * other.quantity
+        else:
+            raise TypeError
 
     # def __iter__(self):
     #     return self
@@ -36,6 +41,7 @@ class Product:
     def new_product(
         cls, product_data: dict, existing_products: list[Self] = None
     ) -> Self:
+        result = None
         if isinstance(product_data, dict):
             name = product_data.get("name", "noname")
             description = product_data.get("description", "")
@@ -81,6 +87,45 @@ class Product:
                 self.__price = new_price
         else:
             self.__price = new_price
+
+
+class Smartphone(Product):
+    def __init__(
+        self,
+        name: str,
+        description: str = "",
+        price: float = 0.0,
+        quantity: int = 0,
+        efficiency: float = 0.0,
+        model: str = "",
+        memory: int = 0,
+        color: str = "",
+    ):
+        super().__init__(name, description, price, quantity)
+        self.efficiency: float = efficiency  # производительность
+        self.model: str = model  # модель
+        self.memory: int = memory  # объем встроенной памяти
+        self.color: str = color  # цвет
+
+
+class LawnGrass(Product):
+    def __init__(
+        self,
+        name: str,
+        description: str = "",
+        price: float = 0.0,
+        quantity: int = 0,
+        country: str = "",  # страна-производитель
+        germination_period: str = "",  # срок прорастания
+        color: str = "",  # цвет
+    ):
+        super().__init__(name, description, price, quantity)
+        self.country: str = country
+        self.germination_period: str = germination_period
+        self.color: str = color  # цвет
+
+        """
+        """
 
 
 class Category:
@@ -147,34 +192,45 @@ class Category:
             self.__current_prod_index: int = -1
             raise StopIteration
 
-    @Overload
-    @signature("str")
-    @signature("str, str, float, int")
-    def add_product(
-        self,
-        product_name: str,
-        product_description: str = "",
-        product_price: float = 0.0,
-        product_quantity: int = 0,
-    ) -> None:
-        product = Product(
-            name=product_name,
-            description=product_description,
-            quantity=product_quantity,
-            price=product_price,
-        )
-        Category.product_count += 1
+    # @Overload
+    # @signature("str")
+    # @signature("str, str, float, int")
+    # def add_product(
+    #         self,
+    #         product_name: str,
+    #         product_description: str = "",
+    #         product_price: float = 0.0,
+    #         product_quantity: int = 0,
+    # ) -> None:
+    #     product = Product(
+    #         name=product_name,
+    #         description=product_description,
+    #         quantity=product_quantity,
+    #         price=product_price,
+    #     )
+    #     Category.product_count += 1
+    #
+    #     self.__products.append(product)
+    #     self.product_names.append(product.name)
 
-        self.__products.append(product)
-        self.product_names.append(product.name)
+    # @add_product.overload
+    # @signature("Product")
+    def add_product(self, product: Any) -> None:
+        if isinstance(product, Product):
+            self.__products.append(product)
+            self.product_names.append(product.name)
+            product.set_owner(self)
+            Category.product_count += 1
+        else:
+            raise TypeError
 
-    @add_product.overload
-    @signature("Product")
-    def add_product(self, product: Product) -> None:
-        self.__products.append(product)
-        self.product_names.append(product.name)
-        product.set_owner(self)
-        Category.product_count += 1
+    # @add_product.overload
+    # @signature("Smartphone")
+    # def add_product(self, product: Smartphone) -> None:
+    #     self.__products.append(product)
+    #     self.product_names.append(product.name)
+    #     product.set_owner(self)
+    #     Category.product_count += 1
 
     def delete_product(self, product_name: str) -> None:
         if product_name in self.product_names:
@@ -198,7 +254,8 @@ class Category:
 
 
 class CategoryMeta:
-    """ Тестирование итерации по объектам агрегата """
+    """Тестирование итерации по объектам агрегата"""
+
     def __init__(self, category: Category):
         self.category: Category = category
 

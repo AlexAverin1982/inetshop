@@ -1,17 +1,38 @@
 # from pythonlangutil.overload import Overload, signature
+from abc import ABC, abstractmethod
 from typing import Any
 
 from typing_extensions import Self
 
 
-class Product:
+class BaseProduct(ABC):
+    def __init__(self):
+        pass
+
+    @abstractmethod
+    def __str__(self):
+        pass
+
+    @abstractmethod
+    def __add__(self):
+        pass
+
+    @abstractmethod
+    def set_owner(self, owner) -> None:
+        pass
+
+class MixinParentControl:
+    def __repr__(self):
+        print()
+
+class Product(BaseProduct):
 
     def __init__(
-        self,
-        name: str,
-        description: str = "",
-        price: float = 0.0,
-        quantity: int = 0,
+            self,
+            name: str,
+            description: str = "",
+            price: float = 0.0,
+            quantity: int = 0,
     ):
         self.name = name
         self.description = description
@@ -39,7 +60,7 @@ class Product:
 
     @classmethod
     def new_product(
-        cls, product_data: dict, existing_products: list[Self] = None
+            cls, product_data: dict, existing_products: list[Self] = None
     ) -> Self:
         result = None
         if isinstance(product_data, dict):
@@ -91,15 +112,15 @@ class Product:
 
 class Smartphone(Product):
     def __init__(
-        self,
-        name: str,
-        description: str = "",
-        price: float = 0.0,
-        quantity: int = 0,
-        efficiency: float = 0.0,
-        model: str = "",
-        memory: int = 0,
-        color: str = "",
+            self,
+            name: str,
+            description: str = "",
+            price: float = 0.0,
+            quantity: int = 0,
+            efficiency: float = 0.0,
+            model: str = "",
+            memory: int = 0,
+            color: str = "",
     ):
         super().__init__(name, description, price, quantity)
         self.efficiency: float = efficiency  # производительность
@@ -110,14 +131,14 @@ class Smartphone(Product):
 
 class LawnGrass(Product):
     def __init__(
-        self,
-        name: str,
-        description: str = "",
-        price: float = 0.0,
-        quantity: int = 0,
-        country: str = "",  # страна-производитель
-        germination_period: str = "",  # срок прорастания
-        color: str = "",  # цвет
+            self,
+            name: str,
+            description: str = "",
+            price: float = 0.0,
+            quantity: int = 0,
+            country: str = "",  # страна-производитель
+            germination_period: str = "",  # срок прорастания
+            color: str = "",  # цвет
     ):
         super().__init__(name, description, price, quantity)
         self.country: str = country
@@ -135,7 +156,7 @@ class Category:
     product_count: int = 0
 
     def __init__(
-        self, name: str, description: str = "", products: list[Product] = None
+            self, name: str, description: str = "", products: list[Product] = None
     ):
         """
         конструктор

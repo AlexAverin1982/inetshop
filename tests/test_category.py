@@ -83,7 +83,7 @@ def test_get_by_index_out_of_bounds(class_category_fixture: Category) -> None:
 
 def test_get_products_count(three_products: list[Product]) -> None:
     cat = Category(name="new cat", description="test desc", products=three_products)
-    assert cat.get_products_count() == 30
+    assert cat.products_count() == 30
 
 
 def test_add_non_product(three_products: list[Product]) -> None:

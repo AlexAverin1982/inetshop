@@ -21,28 +21,46 @@ class BaseProduct(ABC):
     def set_owner(self, owner) -> None:
         pass
 
-class MixinParentControl:
-    def __repr__(self):
-        print()
 
-class Product(BaseProduct):
+class MixinParentControl:
+    """
+    Реализуйте класс-миксин, который будет при создании объекта, то есть при работе метода
+    __init__
+    , печатать в консоль информацию о том, от какого класса и с какими параметрами был создан объект.
+
+    Например:
+
+    Product('Продукт1', 'Описание продукта', 1200, 10)
+    Добавьте миксин в цепочку наследования класса
+    Product.
+    """
+
+    def __init__(self, object_representation: str):
+        print(object_representation)
+
+
+class Product(BaseProduct, MixinParentControl):
 
     def __init__(
-            self,
-            name: str,
-            description: str = "",
-            price: float = 0.0,
-            quantity: int = 0,
+        self,
+        name: str,
+        description: str = "",
+        price: float = 0.0,
+        quantity: int = 0,
     ):
         self.name = name
         self.description = description
         self.__price = price
         self.quantity = quantity
-        self.__owner = None
+        # self.__owner = None
+        # знаю, что хардкод, но как динамически узнать имя родителя, пока не узнал
+        if self.__class__.__name__ == "Product":
+            MixinParentControl.__init__(self, repr(self))
 
     def __repr__(self) -> str:
         """ОТладочное представление продукта"""
-        return f"{self.name}, {self.__price} руб. Остаток: {self.quantity} шт."
+        values = [str(val) for val in self.__dict__.values()]
+        return f"{self.__class__.__name__}({', '.join(values)})"
 
     def __str__(self) -> str:
         """Представление продукта для пользователя"""
@@ -60,7 +78,7 @@ class Product(BaseProduct):
 
     @classmethod
     def new_product(
-            cls, product_data: dict, existing_products: list[Self] = None
+        cls, product_data: dict, existing_products: list[Self] = None
     ) -> Self:
         result = None
         if isinstance(product_data, dict):
@@ -112,51 +130,68 @@ class Product(BaseProduct):
 
 class Smartphone(Product):
     def __init__(
-            self,
-            name: str,
-            description: str = "",
-            price: float = 0.0,
-            quantity: int = 0,
-            efficiency: float = 0.0,
-            model: str = "",
-            memory: int = 0,
-            color: str = "",
+        self,
+        name: str,
+        description: str = "",
+        price: float = 0.0,
+        quantity: int = 0,
+        efficiency: float = 0.0,
+        model: str = "",
+        memory: int = 0,
+        color: str = "",
     ):
         super().__init__(name, description, price, quantity)
         self.efficiency: float = efficiency  # производительность
         self.model: str = model  # модель
         self.memory: int = memory  # объем встроенной памяти
         self.color: str = color  # цвет
+        if self.__class__.__name__ == "Smartphone":
+            MixinParentControl.__init__(self, repr(self))
 
 
 class LawnGrass(Product):
     def __init__(
-            self,
-            name: str,
-            description: str = "",
-            price: float = 0.0,
-            quantity: int = 0,
-            country: str = "",  # страна-производитель
-            germination_period: str = "",  # срок прорастания
-            color: str = "",  # цвет
+        self,
+        name: str,
+        description: str = "",
+        price: float = 0.0,
+        quantity: int = 0,
+        country: str = "",  # страна-производитель
+        germination_period: str = "",  # срок прорастания
+        color: str = "",  # цвет
     ):
         super().__init__(name, description, price, quantity)
         self.country: str = country
         self.germination_period: str = germination_period
         self.color: str = color  # цвет
+        if self.__class__.__name__ == "LawnGrass":
+            MixinParentControl.__init__(self, repr(self))
 
         """
         """
 
 
-class Category:
+class ProductPortion(ABC):
+    def __init__(self):
+        pass
+
+    @abstractmethod
+    def __str__(self):
+        pass
+
+    @abstractmethod
+    def add_product(self, product: Any, count: int = 1):
+        pass
+
+
+class Category(ProductPortion):
     # количество категорий
     category_count: int = 0
     # количество товаров
     product_count: int = 0
 
     def __init__(
-            self, name: str, description: str = "", products: list[Product] = None
+        self, name: str, description: str = "", products: list[Product] = None
     ):
         """
         конструктор
@@ -164,6 +199,7 @@ class Category:
         :param description:  описание категории
         :param products: список уже созданных объектов продукции, включаемых в создаваемую категорию
         """
+        super().__init__()
         Category.category_count += 1
         self.name = name
         self.description = description
@@ -178,6 +214,9 @@ class Category:
             for prod in self.__products:
                 prod.set_owner(self)
 
+    def __str__(self):
+        return f"{self.name}: {', '.join(self.product_names)}"
+
     def __del__(self) -> None:
         """
         деструктор
@@ -186,7 +225,7 @@ class Category:
         """
         Category.category_count -= 1
 
-    def get_products_count(self) -> int:
+    def products_count(self) -> int:
         """
         общее количество продуктов данной категории
         return:
@@ -197,7 +236,7 @@ class Category:
         return count
 
     def __repr__(self):
-        return f"{self.name}, количество продуктов: {self.get_products_count()} шт."
+        return f"{self.name}, количество продуктов: {self.products_count()} шт."
 
     def __iter__(self) -> Self:
         """Возвращает итератор"""
@@ -236,12 +275,12 @@ class Category:
 
     # @add_product.overload
     # @signature("Product")
-    def add_product(self, product: Any) -> None:
+    def add_product(self, product: Any, count: int = 1) -> None:
         if isinstance(product, Product):
             self.__products.append(product)
             self.product_names.append(product.name)
             product.set_owner(self)
-            Category.product_count += 1
+            Category.product_count += count  # for whatever reason....
         else:
             raise TypeError
 
@@ -286,3 +325,31 @@ class CategoryMeta:
         for prod in self.category:
             result += prod.quantity * prod.price
         return result
+
+
+class Order(ProductPortion):
+    overall_count: int = 0
+    """
+    Создать класс «Заказ», в котором будет ссылка на то,
+    какой товар был куплен, количество купленного товара, а также итоговая стоимость. 
+    В заказе может быть указан только один товар.
+    """
+    def __init__(self, product: Product, count: int):
+        super().__init__()
+        Order.overall_count += 1
+        self.product = product
+        self.count = count
+        self.total = product.price * count
+
+    def __str__(self):
+        return (
+            f"{self.product.name}: {self.product.price} * {self.count} = {self.total}"
+        )
+
+    def add_product(self, product: Any, count: int = 1) -> None:
+        if isinstance(product, Product):
+            self.product = product
+            self.count = count
+            self.total = product.price * count
+        else:
+            raise TypeError

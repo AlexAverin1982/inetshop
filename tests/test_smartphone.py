@@ -5,6 +5,9 @@ from src.classes import LawnGrass, Smartphone
 
 
 def test_class_init(class_smartphone_fixture: Smartphone) -> None:
+    """
+    :param class_smartphone_fixture: фикстура объекта смартфон
+    """
     assert class_smartphone_fixture.name == "test_smartphone"
     assert class_smartphone_fixture.description == "test_description"
     assert class_smartphone_fixture.price == 10.5

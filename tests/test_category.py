@@ -13,6 +13,10 @@ def test_category_count() -> None:
     cat1 = Category(name="cat1")
     cat2 = Category(name="cat2")
     passed = Category.category_count == prev_count + 2
+    if cat1:
+        del cat1
+    if cat2:
+        del cat2
 
     #     if passed:
     #         del cat1   # не работает...
@@ -49,6 +53,8 @@ def test_add_products_in_constructor() -> None:
     prod1 = Product(name="prod1")
     prod2 = Product(name="prod2")
     cat = Category(name="cat", description="desc", products=[prod1, prod2])
+    if cat:
+        del cat
     assert Category.product_count == old_count + 2
 
 

@@ -1,33 +1,66 @@
 # from pythonlangutil.overload import Overload, signature
+from abc import ABC, abstractmethod
 from typing import Any
 
 from typing_extensions import Self
 
 
-class Product:
+class BaseProduct(ABC):
+    def __init__(self):
+        pass
+
+    @abstractmethod
+    def __str__(self):
+        pass
+
+    @abstractmethod
+    def __add__(self, other):
+        pass
+
+    # @abstractmethod
+    # def set_owner(self, owner) -> None:
+    #     pass
+
+
+class MixinParentControl:
+    """
+    Реализуйте класс-миксин, который будет при создании объекта, то есть при работе метода
+    __init__
+    , печатать в консоль информацию о том, от какого класса и с какими параметрами был создан объект.
+
+    Например:
+
+    Product('Продукт1', 'Описание продукта', 1200, 10)
+    Добавьте миксин в цепочку наследования класса
+    Product.
+    """
+
+    def __init__(self):
+        print(repr(self))
+
+
+class Product(MixinParentControl, BaseProduct):
 
     def __init__(
-        self,
-        name: str,
-        description: str = "",
-        price: float = 0.0,
-        quantity: int = 0,
+        self, name: str, description: str = "", price: float = 0.0, quantity: int = 0
     ):
-        self.name = name
-        self.description = description
-        self.__price = price
-        self.quantity = quantity
-        self.__owner = None
+        self.name: str = name
+        self.description: str = description
+        self.__price: float = price
+        self.quantity: int = quantity
+        super().__init__()
 
     def __repr__(self) -> str:
         """ОТладочное представление продукта"""
-        return f"{self.name}, {self.__price} руб. Остаток: {self.quantity} шт."
+        values = [str(val) for val in self.__dict__.values()]
+        values = "', '".join(values)
+        return f"{self.__class__.__name__}('{values}')"
 
     def __str__(self) -> str:
         """Представление продукта для пользователя"""
         return f"{self.name}, {self.__price} руб. Остаток: {self.quantity} шт."
 
-    def __add__(self, other):
+    def __add__(self, other) -> float:
         """Вычисление общей стоимости всех товаров"""
         if type(self) is type(other):
             return self.__price * self.quantity + other.__price * other.quantity
@@ -39,8 +72,8 @@ class Product:
 
     @classmethod
     def new_product(
-        cls, product_data: dict, existing_products: list[Self] = None
-    ) -> Self:
+        cls, product_data: dict, existing_products: list[Self] | None = None
+    ) -> Self | None:
         result = None
         if isinstance(product_data, dict):
             name = product_data.get("name", "noname")
@@ -68,8 +101,8 @@ class Product:
 
         return result
 
-    def set_owner(self, owner) -> None:
-        self.__owner = owner
+    # def set_owner(self, owner) -> None:
+    #     self.__owner = owner
 
     @property
     def price(self) -> float:
@@ -101,11 +134,21 @@ class Smartphone(Product):
         memory: int = 0,
         color: str = "",
     ):
+        """
+        name: str = 'noname'
+        description: str = ""
+        price: float = 0.0
+        quantity: int = 0
+        efficiency: float = 0.0
+        model: str = ""
+        memory: int = 0
+        color: str = ""
+        """
+        self.efficiency: float = efficiency
+        self.model: str = model
+        self.memory: int = memory
+        self.color: str = color
         super().__init__(name, description, price, quantity)
-        self.efficiency: float = efficiency  # производительность
-        self.model: str = model  # модель
-        self.memory: int = memory  # объем встроенной памяти
-        self.color: str = color  # цвет
 
 
 class LawnGrass(Product):
@@ -119,23 +162,42 @@ class LawnGrass(Product):
         germination_period: str = "",  # срок прорастания
         color: str = "",  # цвет
     ):
-        super().__init__(name, description, price, quantity)
+        """
+        name: str,
+        description: str = "",
+        price: float = 0.0,
+        quantity: int = 0,
+        country: str = "",  # страна-производитель
+        germination_period: str = "",  # срок прорастания
+        color: str = "",  # цвет
+        """
+        self.color: str = color
         self.country: str = country
         self.germination_period: str = germination_period
-        self.color: str = color  # цвет
-
-        """
-        """
+        super().__init__(name, description, price, quantity)
 
 
-class Category:
+class ProductPortion(ABC):
+    def __init__(self):
+        pass
+
+    @abstractmethod
+    def __str__(self) -> None:
+        pass
+
+    @abstractmethod
+    def add_product(self, product: Any, count: int = 1) -> None:
+        pass
+
+
+class Category(ProductPortion):
     # количество категорий
     category_count: int = 0
     # количество товаров
     product_count: int = 0
 
     def __init__(
-        self, name: str, description: str = "", products: list[Product] = None
+        self, name: str, description: str = "", products: list[Product] | None = None
     ):
         """
         конструктор
@@ -143,6 +205,7 @@ class Category:
         :param description:  описание категории
         :param products: список уже созданных объектов продукции, включаемых в создаваемую категорию
         """
+        super().__init__()
         Category.category_count += 1
         self.name = name
         self.description = description
@@ -154,8 +217,11 @@ class Category:
             self.__products = products
             self.product_names = [prod.name for prod in self.__products]
             Category.product_count += len(self.__products)
-            for prod in self.__products:
-                prod.set_owner(self)
+            # for prod in self.__products:
+            #     prod.set_owner(self)
+
+    def __str__(self) -> str:
+        return f"{self.name}: {', '.join(self.product_names)}"
 
     def __del__(self) -> None:
         """
@@ -165,7 +231,7 @@ class Category:
         """
         Category.category_count -= 1
 
-    def get_products_count(self) -> int:
+    def products_count(self) -> int:
         """
         общее количество продуктов данной категории
         return:
@@ -175,21 +241,21 @@ class Category:
             count += prod.quantity
         return count
 
-    def __repr__(self):
-        return f"{self.name}, количество продуктов: {self.get_products_count()} шт."
+    def __repr__(self) -> str:
+        return f"{self.name}, количество продуктов: {self.products_count()} шт."
 
     def __iter__(self) -> Self:
         """Возвращает итератор"""
         # self.__current_prod_index: int = -1       # для итерации по продуктам категории
         return self
 
-    def __next__(self):
+    def __next__(self) -> Product:
         """Возвращает следующий продукт категории"""
         if self.__current_prod_index + 1 < len(self.__products):
             self.__current_prod_index += 1
             return self.__products[self.__current_prod_index]
         else:
-            self.__current_prod_index: int = -1
+            self.__current_prod_index = -1
             raise StopIteration
 
     # @Overload
@@ -215,12 +281,12 @@ class Category:
 
     # @add_product.overload
     # @signature("Product")
-    def add_product(self, product: Any) -> None:
+    def add_product(self, product: Any, count: int = 1) -> None:
         if isinstance(product, Product):
             self.__products.append(product)
             self.product_names.append(product.name)
-            product.set_owner(self)
-            Category.product_count += 1
+            # product.set_owner(self)
+            Category.product_count += count  # for whatever reason....
         else:
             raise TypeError
 
@@ -259,9 +325,38 @@ class CategoryMeta:
     def __init__(self, category: Category):
         self.category: Category = category
 
-    def get_total_cost(self) -> int:
+    def get_total_cost(self) -> float:
         """Стоимость всех продуктов"""
-        result = 0
+        result = 0.0
         for prod in self.category:
             result += prod.quantity * prod.price
         return result
+
+
+class Order(ProductPortion):
+    overall_count: int = 0
+    """
+    Создать класс «Заказ», в котором будет ссылка на то,
+    какой товар был куплен, количество купленного товара, а также итоговая стоимость.
+    В заказе может быть указан только один товар.
+    """
+
+    def __init__(self, product: Product, count: int):
+        super().__init__()
+        Order.overall_count += 1
+        self.product = product
+        self.count = count
+        self.total = product.price * count
+
+    def __str__(self) -> str:
+        return (
+            f"{self.product.name}: {self.product.price} * {self.count} = {self.total}"
+        )
+
+    def add_product(self, product: Any, count: int = 1) -> None:
+        if isinstance(product, Product):
+            self.product = product
+            self.count = count
+            self.total = product.price * count
+        else:
+            raise TypeError

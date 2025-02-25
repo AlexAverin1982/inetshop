@@ -13,6 +13,10 @@ def test_category_count() -> None:
     cat1 = Category(name="cat1")
     cat2 = Category(name="cat2")
     passed = Category.category_count == prev_count + 2
+    if cat1:
+        del cat1
+    if cat2:
+        del cat2
 
     #     if passed:
     #         del cat1   # не работает...
@@ -49,6 +53,8 @@ def test_add_products_in_constructor() -> None:
     prod1 = Product(name="prod1")
     prod2 = Product(name="prod2")
     cat = Category(name="cat", description="desc", products=[prod1, prod2])
+    if cat:
+        del cat
     assert Category.product_count == old_count + 2
 
 
@@ -83,7 +89,7 @@ def test_get_by_index_out_of_bounds(class_category_fixture: Category) -> None:
 
 def test_get_products_count(three_products: list[Product]) -> None:
     cat = Category(name="new cat", description="test desc", products=three_products)
-    assert cat.get_products_count() == 30
+    assert cat.products_count() == 30
 
 
 def test_add_non_product(three_products: list[Product]) -> None:

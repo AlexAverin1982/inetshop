@@ -35,82 +35,26 @@ class MixinParentControl:
     Product.
     """
 
-    def __init__(self, *args, **kwargs):
-        arguments = [str(arg) for arg in args]
-        class_name = "Unknown_class"
-        if kwargs:
-            class_name = kwargs.get("class_name", "Unknown_class")
-            if class_name != "Unknown_class":
-                del kwargs["class_name"]
-            # нудно наводим красоту
-            if len(kwargs.keys()):
-                for ind, param_name in enumerate(
-                    ["name", "description", "price", "quantity"]
-                ):
-                    if kwargs.get(param_name):
-                        if len(arguments) > ind:
-                            arguments[ind] = str(kwargs.get(param_name))
-                        else:
-                            arguments.append(str(kwargs.get(param_name)))
-
-                if (
-                    class_name == "Smartphone"
-                ):  # опять хардкод, но так хоть код будет постройнее
-                    for ind, param_name in enumerate(
-                        ["efficiency", "model", "memory", "color"]
-                    ):
-                        if kwargs.get(param_name):
-                            if len(arguments) > ind + 4:
-                                arguments[ind + 4] = str(kwargs.get(param_name))
-                            else:
-                                arguments.append(str(kwargs.get(param_name)))
-                elif class_name == "LawnGrass":
-                    for ind, param_name in enumerate(
-                        ["country", "germination_period", "color"]
-                    ):
-                        if kwargs.get(param_name):
-                            if len(arguments) > ind + 4:
-                                arguments[ind + 4] = str(kwargs.get(param_name))
-                            else:
-                                arguments.append(str(kwargs.get(param_name)))
-
-        param_values = "', '".join(arguments)
-        object_representation = f"{class_name}('{param_values}')"
-        print(object_representation)
+    def __init__(self):
+        print(repr(self))
 
 
 class Product(MixinParentControl, BaseProduct):
 
-    def __init__(self, *args, **kwargs):
-        self.name: str = ""
-        self.description: str = ""
-        self.__price: float = 0.0
-        self.quantity: int = 0
-        if (
-            args
-        ):  # очень странный блок, но я не знаю, как еще передать args и kwargs в класс-примесь
-            self.name = str(args[0])
-            if len(args) > 1:
-                self.description = str(args[1])
-                if (len(args) > 2) and isinstance(args[2], (float, int)):
-                    self.__price = float(args[2])
-                    if (len(args) > 3) and isinstance(args[3], int):
-                        self.quantity = int(args[3])
-        if kwargs:
-            self.name = kwargs.get("name", self.name)
-            self.description = kwargs.get("description", self.description)
-            self.__price = kwargs.get("price", self.__price)
-            self.quantity = kwargs.get("quantity", self.quantity)
-            kwargs["class_name"] = self.__class__.__name__
-        else:
-            kwargs = {"class_name": self.__class__.__name__}
-        # self.__owner = None
-        super().__init__(*args, **kwargs)
+    def __init__(
+        self, name: str, description: str = "", price: float = 0.0, quantity: int = 0
+    ):
+        self.name: str = name
+        self.description: str = description
+        self.__price: float = price
+        self.quantity: int = quantity
+        super().__init__()
 
     def __repr__(self) -> str:
         """ОТладочное представление продукта"""
         values = [str(val) for val in self.__dict__.values()]
-        return f"{self.__class__.__name__}({', '.join(values)})"
+        values = "', '".join(values)
+        return f"{self.__class__.__name__}('{values}')"
 
     def __str__(self) -> str:
         """Представление продукта для пользователя"""
@@ -179,7 +123,17 @@ class Product(MixinParentControl, BaseProduct):
 
 
 class Smartphone(Product):
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self,
+        name: str,
+        description: str = "",
+        price: float = 0.0,
+        quantity: int = 0,
+        efficiency: float = 0.0,
+        model: str = "",
+        memory: int = 0,
+        color: str = "",
+    ):
         """
         name: str = 'noname'
         description: str = ""
@@ -190,36 +144,24 @@ class Smartphone(Product):
         memory: int = 0
         color: str = ""
         """
-
-        self.efficiency: float = 0.0
-        self.model: str = ""
-        self.memory: int = 0
-        self.color: str = ""
-
-        if (
-            args
-        ):  # снова странный блок, но я все еще не знаю, как еще передать args и kwargs в примесь...
-            if (len(args) > 4) and isinstance(args[2], (float, int)):
-                self.efficiency = float(args[4])
-                if len(args) > 5:
-                    self.model = str(args[5])
-                    if (len(args) > 6) and isinstance(args[6], int):
-                        self.memory = args[6]
-                        if len(args) > 7:
-                            self.color = str(args[7])
-        if kwargs:
-            self.efficiency = kwargs.get("efficiency", self.efficiency)
-            self.model = kwargs.get("model", self.model)
-            self.memory = kwargs.get("memory", self.memory)
-            self.color = kwargs.get("color", self.color)
-        else:
-            kwargs = {"class_name": self.__class__.__name__}
-        # self.__owner = None
-        super().__init__(*args, **kwargs)
+        self.efficiency: float = efficiency
+        self.model: str = model
+        self.memory: int = memory
+        self.color: str = color
+        super().__init__(name, description, price, quantity)
 
 
 class LawnGrass(Product):
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self,
+        name: str,
+        description: str = "",
+        price: float = 0.0,
+        quantity: int = 0,
+        country: str = "",  # страна-производитель
+        germination_period: str = "",  # срок прорастания
+        color: str = "",  # цвет
+    ):
         """
         name: str,
         description: str = "",
@@ -229,28 +171,10 @@ class LawnGrass(Product):
         germination_period: str = "",  # срок прорастания
         color: str = "",  # цвет
         """
-        self.color: str = ""
-        self.country: str = ""
-        self.germination_period: str = ""
-        if (
-            args
-        ):  # снова странный блок, но я все еще не знаю, как еще передать args и kwargs в примесь...
-            if len(args) > 4:
-                self.country = str(args[4])
-                if len(args) > 5:
-                    self.germination_period = str(args[5])
-                    if len(args) > 6:
-                        self.color = str(args[6])
-        if kwargs:
-            self.country = kwargs.get("country", self.country)
-            self.germination_period = kwargs.get(
-                "germination_period", self.germination_period
-            )
-            self.color = kwargs.get("color", self.color)
-        else:
-            kwargs = {"class_name": self.__class__.__name__}
-        # self.__owner = None
-        super().__init__(*args, **kwargs)
+        self.color: str = color
+        self.country: str = country
+        self.germination_period: str = germination_period
+        super().__init__(name, description, price, quantity)
 
 
 class ProductPortion(ABC):

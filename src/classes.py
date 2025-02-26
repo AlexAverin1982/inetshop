@@ -1,20 +1,23 @@
+# mypy: disable-error-code="no-any-return"
 # from pythonlangutil.overload import Overload, signature
 from abc import ABC, abstractmethod
 from typing import Any
 
 from typing_extensions import Self
 
+from src.custom_exceptions import ZeroProductQuantityException
+
 
 class BaseProduct(ABC):
-    def __init__(self):
+    def __init__(self):  # type: ignore
         pass
 
     @abstractmethod
-    def __str__(self):
+    def __str__(self):  # type: ignore
         pass
 
     @abstractmethod
-    def __add__(self, other):
+    def __add__(self, other):  # type: ignore
         pass
 
     # @abstractmethod
@@ -35,7 +38,7 @@ class MixinParentControl:
     Product.
     """
 
-    def __init__(self):
+    def __init__(self):  # type: ignore
         print(repr(self))
 
 
@@ -44,23 +47,26 @@ class Product(MixinParentControl, BaseProduct):
     def __init__(
         self, name: str, description: str = "", price: float = 0.0, quantity: int = 0
     ):
-        self.name: str = name
-        self.description: str = description
-        self.__price: float = price
-        self.quantity: int = quantity
-        super().__init__()
+        if quantity:
+            self.name: str = name
+            self.description: str = description
+            self.__price: float = price
+            self.quantity: int = quantity
+            super().__init__()
+        else:
+            raise ValueError("Товар с нулевым количеством не может быть добавлен")
 
     def __repr__(self) -> str:
         """ОТладочное представление продукта"""
         values = [str(val) for val in self.__dict__.values()]
-        values = "', '".join(values)
+        values = "', '".join(values)  # type: ignore
         return f"{self.__class__.__name__}('{values}')"
 
     def __str__(self) -> str:
         """Представление продукта для пользователя"""
         return f"{self.name}, {self.__price} руб. Остаток: {self.quantity} шт."
 
-    def __add__(self, other) -> float:
+    def __add__(self, other) -> float:  # type: ignore
         """Вычисление общей стоимости всех товаров"""
         if type(self) is type(other):
             return self.__price * self.quantity + other.__price * other.quantity
@@ -178,11 +184,11 @@ class LawnGrass(Product):
 
 
 class ProductPortion(ABC):
-    def __init__(self):
+    def __init__(self):  # type: ignore
         pass
 
     @abstractmethod
-    def __str__(self) -> None:
+    def __str__(self) -> None:  # type: ignore
         pass
 
     @abstractmethod
@@ -214,13 +220,17 @@ class Category(ProductPortion):
         self.product_names: list[str] = []
         self.__current_prod_index: int = -1  # для итерации по продуктам категории
         if products:
+            for product in products:
+                if product.quantity == 0:
+                    raise ZeroProductQuantityException
+
             self.__products = products
             self.product_names = [prod.name for prod in self.__products]
             Category.product_count += len(self.__products)
             # for prod in self.__products:
             #     prod.set_owner(self)
 
-    def __str__(self) -> str:
+    def __str__(self) -> str:  # type: ignore
         return f"{self.name}: {', '.join(self.product_names)}"
 
     def __del__(self) -> None:
@@ -283,10 +293,12 @@ class Category(ProductPortion):
     # @signature("Product")
     def add_product(self, product: Any, count: int = 1) -> None:
         if isinstance(product, Product):
+            if count * product.quantity == 0:
+                raise ZeroProductQuantityException
             self.__products.append(product)
             self.product_names.append(product.name)
             # product.set_owner(self)
-            Category.product_count += count  # for whatever reason....
+            Category.product_count += 1  # for whatever reason....
         else:
             raise TypeError
 
@@ -307,6 +319,9 @@ class Category(ProductPortion):
 
     @property
     def products(self) -> str:
+        """
+        Описание содержимого категории
+        """
         return "\n".join([str(prod) for prod in self.__products])
 
     def get_product_by_index(self, ind: int) -> Product | None:
@@ -317,6 +332,19 @@ class Category(ProductPortion):
             return self.__products[ind]
         else:
             return None
+
+    def middle_price(self) -> float:
+        """
+        Вычисляем средний ценник товаров категории и 0, если товаров в категории нет
+        """
+        result = 0.0
+        for product in self.__products:
+            result += product.price
+        try:
+            result /= len(self.__products)
+        except ZeroDivisionError:
+            result = 0.0
+        return result
 
 
 class CategoryMeta:
@@ -344,19 +372,33 @@ class Order(ProductPortion):
     def __init__(self, product: Product, count: int):
         super().__init__()
         Order.overall_count += 1
-        self.product = product
-        self.count = count
-        self.total = product.price * count
+        if product.quantity * count:
+            self.product = product
+            self.count = count
+            self.total = product.price * count
+        else:
+            raise ZeroProductQuantityException
 
-    def __str__(self) -> str:
+    def __str__(self) -> str:  # type: ignore
+        """
+        Символьное представление объекта
+        """
         return (
             f"{self.product.name}: {self.product.price} * {self.count} = {self.total}"
         )
 
     def add_product(self, product: Any, count: int = 1) -> None:
+        """
+        Добавляем продкут в заказ
+        :param product:
+        :param count: количество продукта в заказе
+        """
         if isinstance(product, Product):
-            self.product = product
-            self.count = count
-            self.total = product.price * count
+            if product.quantity * count:
+                self.product = product
+                self.count = count
+                self.total = product.price * count
+            else:
+                raise ZeroProductQuantityException
         else:
             raise TypeError

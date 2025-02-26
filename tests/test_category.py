@@ -50,8 +50,8 @@ def test_products_count(
 
 def test_add_products_in_constructor() -> None:
     old_count = Category.product_count
-    prod1 = Product(name="prod1")
-    prod2 = Product(name="prod2")
+    prod1 = Product(name="prod1", quantity=10)
+    prod2 = Product(name="prod2", quantity=10)
     cat = Category(name="cat", description="desc", products=[prod1, prod2])
     if cat:
         del cat
@@ -96,3 +96,15 @@ def test_add_non_product(three_products: list[Product]) -> None:
     cat = Category(name="new cat", description="test desc", products=three_products)
     with pytest.raises(TypeError):
         cat.add_product("Not a product")
+
+
+def test_mean_price_no_products(three_products: list[Product]) -> None:
+    cat = Category("cat")
+    assert cat.middle_price() == 0.0
+    expected_mean_price = 0.0
+    prod_count = 0
+    for product in three_products:
+        expected_mean_price += product.price
+        prod_count += product.quantity
+        cat.add_product(product, product.quantity)
+    assert cat.middle_price() == expected_mean_price / len(three_products)

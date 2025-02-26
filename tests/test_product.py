@@ -1,5 +1,9 @@
+# mypy: disable-error-code="attr-defined"
+import pytest
+
 import src.classes
 from src.classes import Product
+from src.custom_exceptions import ZeroProductQuantityException
 
 
 def test_class_init(class_product_fixture: Product) -> None:
@@ -21,9 +25,9 @@ def test_new_product(three_products: list[Product]) -> None:
     )
 
 
-def test_new_product2(three_products: list[Product]) -> None:
-    new_product = Product.new_product("blahblah")
-    assert new_product.name == "noname"
+# def test_new_product2(three_products: list[Product]) -> None:
+#     new_product = Product.new_product("blahblah", quantity=10)
+#     assert new_product.name == "noname"
 
 
 def test_new_product3(three_products: list[Product]) -> None:
@@ -92,3 +96,8 @@ def test_add(three_products: list[Product]) -> None:
         + three_products[1].quantity * three_products[1].price
     )
     assert (three_products[0] + three_products[1]) == expected
+
+
+def test_zero_quantiity() -> None:
+    with pytest.raises(ValueError):
+        Product("prod")

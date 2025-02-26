@@ -54,18 +54,18 @@
             </div>
         </aside>
         <h2>
-            <span class="text">55 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">55<span class="text"> run</span></button>
+            <span class="text">65 statements &nbsp;</span>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">65<span class="text"> run</span></button>
             <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">0<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
         </h2>
         <p class="text">
             <a id="prevFileLink" class="nav" href="z_a44f0ac069e85531_test_CategoryMeta_py.html">&#xab; prev</a> &nbsp; &nbsp;
             <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
-            <a id="nextFileLink" class="nav" href="z_a44f0ac069e85531_test_lawngrass_py.html">&#xbb; next</a>
+            <a id="nextFileLink" class="nav" href="z_a44f0ac069e85531_test_custom_exceptions_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.10">coverage.py v7.6.10</a>,
-            created at 2025-02-24 22:10 +0300
+            created at 2025-02-26 11:03 +0300
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -132,8 +132,8 @@
     <p class="pln"><span class="n"><a id="t50" href="#t50">50</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t51" href="#t51">51</a></span><span class="t"><span class="key">def</span> <span class="nam">test_add_products_in_constructor</span><span class="op">(</span><span class="op">)</span> <span class="op">-></span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t52" href="#t52">52</a></span><span class="t">    <span class="nam">old_count</span> <span class="op">=</span> <span class="nam">Category</span><span class="op">.</span><span class="nam">product_count</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t53" href="#t53">53</a></span><span class="t">    <span class="nam">prod1</span> <span class="op">=</span> <span class="nam">Product</span><span class="op">(</span><span class="nam">name</span><span class="op">=</span><span class="str">"prod1"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t54" href="#t54">54</a></span><span class="t">    <span class="nam">prod2</span> <span class="op">=</span> <span class="nam">Product</span><span class="op">(</span><span class="nam">name</span><span class="op">=</span><span class="str">"prod2"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t53" href="#t53">53</a></span><span class="t">    <span class="nam">prod1</span> <span class="op">=</span> <span class="nam">Product</span><span class="op">(</span><span class="nam">name</span><span class="op">=</span><span class="str">"prod1"</span><span class="op">,</span> <span class="nam">quantity</span><span class="op">=</span><span class="num">10</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t54" href="#t54">54</a></span><span class="t">    <span class="nam">prod2</span> <span class="op">=</span> <span class="nam">Product</span><span class="op">(</span><span class="nam">name</span><span class="op">=</span><span class="str">"prod2"</span><span class="op">,</span> <span class="nam">quantity</span><span class="op">=</span><span class="num">10</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t55" href="#t55">55</a></span><span class="t">    <span class="nam">cat</span> <span class="op">=</span> <span class="nam">Category</span><span class="op">(</span><span class="nam">name</span><span class="op">=</span><span class="str">"cat"</span><span class="op">,</span> <span class="nam">description</span><span class="op">=</span><span class="str">"desc"</span><span class="op">,</span> <span class="nam">products</span><span class="op">=</span><span class="op">[</span><span class="nam">prod1</span><span class="op">,</span> <span class="nam">prod2</span><span class="op">]</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t56" href="#t56">56</a></span><span class="t">    <span class="key">if</span> <span class="nam">cat</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t57" href="#t57">57</a></span><span class="t">        <span class="key">del</span> <span class="nam">cat</span>&nbsp;</span><span class="r"></span></p>
@@ -178,16 +178,28 @@
     <p class="run"><span class="n"><a id="t96" href="#t96">96</a></span><span class="t">    <span class="nam">cat</span> <span class="op">=</span> <span class="nam">Category</span><span class="op">(</span><span class="nam">name</span><span class="op">=</span><span class="str">"new cat"</span><span class="op">,</span> <span class="nam">description</span><span class="op">=</span><span class="str">"test desc"</span><span class="op">,</span> <span class="nam">products</span><span class="op">=</span><span class="nam">three_products</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t97" href="#t97">97</a></span><span class="t">    <span class="key">with</span> <span class="nam">pytest</span><span class="op">.</span><span class="nam">raises</span><span class="op">(</span><span class="nam">TypeError</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t98" href="#t98">98</a></span><span class="t">        <span class="nam">cat</span><span class="op">.</span><span class="nam">add_product</span><span class="op">(</span><span class="str">"Not a product"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t99" href="#t99">99</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t100" href="#t100">100</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t101" href="#t101">101</a></span><span class="t"><span class="key">def</span> <span class="nam">test_mean_price_no_products</span><span class="op">(</span><span class="nam">three_products</span><span class="op">:</span> <span class="nam">list</span><span class="op">[</span><span class="nam">Product</span><span class="op">]</span><span class="op">)</span> <span class="op">-></span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t102" href="#t102">102</a></span><span class="t">    <span class="nam">cat</span> <span class="op">=</span> <span class="nam">Category</span><span class="op">(</span><span class="str">"cat"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t103" href="#t103">103</a></span><span class="t">    <span class="key">assert</span> <span class="nam">cat</span><span class="op">.</span><span class="nam">middle_price</span><span class="op">(</span><span class="op">)</span> <span class="op">==</span> <span class="num">0.0</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t104" href="#t104">104</a></span><span class="t">    <span class="nam">expected_mean_price</span> <span class="op">=</span> <span class="num">0.0</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t105" href="#t105">105</a></span><span class="t">    <span class="nam">prod_count</span> <span class="op">=</span> <span class="num">0</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t106" href="#t106">106</a></span><span class="t">    <span class="key">for</span> <span class="nam">product</span> <span class="key">in</span> <span class="nam">three_products</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t107" href="#t107">107</a></span><span class="t">        <span class="nam">expected_mean_price</span> <span class="op">+=</span> <span class="nam">product</span><span class="op">.</span><span class="nam">price</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t108" href="#t108">108</a></span><span class="t">        <span class="nam">prod_count</span> <span class="op">+=</span> <span class="nam">product</span><span class="op">.</span><span class="nam">quantity</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t109" href="#t109">109</a></span><span class="t">        <span class="nam">cat</span><span class="op">.</span><span class="nam">add_product</span><span class="op">(</span><span class="nam">product</span><span class="op">,</span> <span class="nam">product</span><span class="op">.</span><span class="nam">quantity</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t110" href="#t110">110</a></span><span class="t">    <span class="key">assert</span> <span class="nam">cat</span><span class="op">.</span><span class="nam">middle_price</span><span class="op">(</span><span class="op">)</span> <span class="op">==</span> <span class="nam">expected_mean_price</span> <span class="op">/</span> <span class="nam">len</span><span class="op">(</span><span class="nam">three_products</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
     <div class="content">
         <p>
             <a class="nav" href="z_a44f0ac069e85531_test_CategoryMeta_py.html">&#xab; prev</a> &nbsp; &nbsp;
             <a class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
-            <a class="nav" href="z_a44f0ac069e85531_test_lawngrass_py.html">&#xbb; next</a>
+            <a class="nav" href="z_a44f0ac069e85531_test_custom_exceptions_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.10">coverage.py v7.6.10</a>,
-            created at 2025-02-24 22:10 +0300
+            created at 2025-02-26 11:03 +0300
         </p>
     </div>
 </footer>

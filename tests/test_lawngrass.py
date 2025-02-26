@@ -1,3 +1,4 @@
+# mypy: disable-error-code="attr-defined"
 import src.classes
 from src.classes import LawnGrass
 

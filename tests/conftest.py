@@ -1,6 +1,6 @@
 import pytest
 
-from src.classes import Category, LawnGrass, Product, Smartphone
+from src.classes import Category, LawnGrass, Order, Product, Smartphone
 
 
 @pytest.fixture()
@@ -99,3 +99,8 @@ def class_lawngrass_fixture() -> LawnGrass:
         germination_period="1 год",
         color="black",
     )
+
+
+@pytest.fixture()
+def class_order_fixture(class_product_fixture: Product) -> Order:
+    return Order(class_product_fixture, count=1)
